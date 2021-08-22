@@ -13,7 +13,6 @@ import React, { useContext, useEffect, useState } from 'react';
 import Layout from '../components/Layout';
 import { Store } from '../utils/Store';
 import useStyles from '../utils/styles';
-import Cookies from 'js-cookie';
 import { Controller, useForm } from 'react-hook-form';
 import { useSnackbar } from 'notistack';
 import { getError } from '../utils/error';
@@ -28,7 +27,7 @@ export default function Register() {
 
     const router = useRouter();
     const { redirect } = router.query;
-    const { state, dispatch } = useContext(Store);
+    const { state } = useContext(Store);
     const { userInfo } = state;
     useEffect(() => {
         if (userInfo) {
@@ -36,10 +35,6 @@ export default function Register() {
         }
     }, []);
 
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
     const classes = useStyles();
 
     const submitHandler = async ({ name, email, password, confirmPassword }) => {
@@ -49,7 +44,7 @@ export default function Register() {
             return;
         }
         try {
-            const { data } = await axios.post('/api/users/register', {
+            await axios.post('/api/users/register', {
                 name,
                 email,
                 password,
