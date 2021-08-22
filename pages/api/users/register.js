@@ -8,6 +8,15 @@ const handler = nc();
 
 handler.post(async (req, res) => {
     await db.connect();
+
+    const exist = await User.findOne({ email: req.body.email })
+    console.log('exist', exist)
+
+    if (exist) {
+        res.status(409).json({ message: "Please enter uniq email." })
+        return;
+    }
+
     const newUser = new User({
         name: req.body.name,
         email: req.body.email,

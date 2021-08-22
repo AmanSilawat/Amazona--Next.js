@@ -16,6 +16,7 @@ import useStyles from '../utils/styles';
 import { Controller, useForm } from 'react-hook-form';
 import { useSnackbar } from 'notistack';
 import { getError } from '../utils/error';
+import Cookies from 'js-cookie';
 
 export default function Register() {
     const {
@@ -27,7 +28,7 @@ export default function Register() {
 
     const router = useRouter();
     const { redirect } = router.query;
-    const { state } = useContext(Store);
+    const { state, dispatch } = useContext(Store);
     const { userInfo } = state;
     useEffect(() => {
         if (userInfo) {
@@ -44,17 +45,16 @@ export default function Register() {
             return;
         }
         try {
-            await axios.post('/api/users/register', {
+            const { data } = await axios.post('/api/users/register', {
                 name,
                 email,
                 password,
             });
-            enqueueSnackbar(getError(err), { variant: 'error' });
+            dispatch({ type: 'USER_LOGIN', payload: data });
+            Cookies.set('userInfo', JSON.stringify(data));
+            router.push(redirect || '/');
         } catch (err) {
-            enqueueSnackbar(
-                err.response.data ? err.response.data.message : err.message,
-                { variant: 'error' }
-            );
+            enqueueSnackbar(getError(err), { variant: 'error' });
         }
     };
     return (
